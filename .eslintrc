@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "@nuxtjs",
+    "plugin:nuxt/recommended",
+    "@nuxtjs/eslint-config-typescript"
+  ],
+  "rules": {
+    "max-len": ["error", { "code": 95 }],
+    "comma-dangle": ["error", {
+      "arrays": "never",
+      "objects": "always",
+      "imports": "never",
+      "exports": "never",
+      "functions": "never"
+    }],
+    "indent": ["error", 2],
+    "no-tabs": 0,
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"]
+  }
+}
