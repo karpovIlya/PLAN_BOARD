@@ -1,9 +1,10 @@
 import { useUserStore } from '~/entities/user/index'
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin(async () => {
   const userStore = useUserStore()
+  const isAuth = await userStore.checkAuth()
 
-  if (userStore.isAuth) {
-    userStore.getProfile()
+  if (isAuth) {
+    await userStore.getProfile()
   }
 })

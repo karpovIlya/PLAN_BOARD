@@ -2,9 +2,9 @@
   <div>
     <transition name="fade" mode="out-in">
       <component
-        :is="visibleComponent"
-        @submit-mail="visibleComponent = SendKeyForm"
-        @submit-key="visibleComponent = SendNewPassword"
+        :is="currentComponent"
+        @submit-mail="currentComponent = SendKeyForm"
+        @submit-key="currentComponent = SendNewPassword"
       />
     </transition>
 
@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import SendMailForm from '~/widgets/password-recovery-form/components/steps/SendMailForm.vue'
 import SendKeyForm from '~/widgets/password-recovery-form/components/steps/SendKeyForm.vue'
-// eslint-disable-next-line max-len
-import SendNewPassword from '~/widgets/password-recovery-form/components/steps/SendNewPassword.vue'
+import SendNewPassword
+  from '~/widgets/password-recovery-form/components/steps/SendNewPassword.vue'
 
-const visibleComponent: Ref<Component> = shallowRef(SendMailForm)
+const currentComponent: Ref<Component> = shallowRef(SendMailForm)
 </script>

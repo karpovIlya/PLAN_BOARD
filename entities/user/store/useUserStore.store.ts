@@ -1,85 +1,77 @@
 import { defineStore } from 'pinia'
-import { useRefreshToken } from '~/entities/user/api/useRefreshToken'
-import { useGetProfile } from '~/entities/user/api/useGetProfile'
+import type { IUserState } from '~/entities/user/model/UserStore.interface'
+import type { IToken } from '~/entities/user/model/Token.interface'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
+import UserApi from '~/entities/user/api/UserApi'
 
-export const useUserStore = defineStore('user-store', () => {
-  const router = useRouter()
+const ACCESS_TOKEN_KEY_LOCAL_STORAGE = 'accessToken'
+const REFRESH_TOKEN_KEY_LOCAL_STORAGE = 'refreshToke'
 
-  const id = ref(0)
-  const email = ref('')
-  const firstname = ref('')
-  const middlename = ref('')
-  const lastname = ref('')
-  const avatar = ref('')
+const userApi = new UserApi()
+const getDefaultState = (): IUserState => ({
+  profile: {
+    firstname: '',
+    middlename: '',
+    lastname: '',
+    avatar: '',
+    hash: '',
+    email: '',
+  },
+  token: {
+    accessToken: localStorage.getItem(ACCESS_TOKEN_KEY_LOCAL_STORAGE) || '',
+    refreshToken: localStorage.getItem(REFRESH_TOKEN_KEY_LOCAL_STORAGE) || '',
+  },
+})
 
-  const accessToken = ref(localStorage.getItem('accessToken') ?? '')
-  const refreshToken = ref(localStorage.getItem('refreshToken') ?? '')
+export const useUserStore = defineStore('user-store', {
+  state: (): IUserState => getDefaultState(),
+  actions: {
+    clearState () {
+      Object.assign(this.$state, getDefaultState())
 
-  const isAuth = computed(() => {
-    return !!accessToken.value
-  })
+      localStorage.removeItem(ACCESS_TOKEN_KEY_LOCAL_STORAGE)
+      localStorage.removeItem(REFRESH_TOKEN_KEY_LOCAL_STORAGE)
+    },
+    setToken (token: IToken) {
+      this.$state.token = token
 
-  const setAccessToken = (newAccessToken: string) => {
-    accessToken.value = newAccessToken
-    localStorage.setItem('accessToken', accessToken.value)
-  }
+      localStorage.setItem(
+        ACCESS_TOKEN_KEY_LOCAL_STORAGE,
+        this.$state.token.accessToken
+      )
+      localStorage.setItem(
+        REFRESH_TOKEN_KEY_LOCAL_STORAGE,
+        this.$state.token.refreshToken
+      )
+    },
+    async checkAuth () {
+      const response = await userApi.checkToken(this.$state.token.refreshToken)
+      return isSuccessResponse(response)
+    },
+    async getProfile () {
+      const response = await userApi.getProfile(this.$state.token.accessToken)
 
-  const setRefreshToken = (newRefreshToken: string) => {
-    refreshToken.value = newRefreshToken
-    localStorage.setItem('refreshToken', accessToken.value)
-  }
+      if (isSuccessResponse(response) && response.body?.profile) {
+        this.$state.profile = response.body?.profile
+      }
+    },
+    async updateAccessToken () {
+      const response = await userApi.refreshToken(this.$state.token.refreshToken)
 
-  const clearState = () => {
-    id.value = 0
-    email.value = ''
-    firstname.value = ''
-    middlename.value = ''
-    lastname.value = ''
-    avatar.value = ''
+      if (!isSuccessResponse(response) || !response.body?.accessToken) {
+        const router = useRouter()
 
-    accessToken.value = ''
-    refreshToken.value = ''
-  }
+        this.clearState()
+        router.push('/sign-in')
+        return ''
+      }
 
-  const getProfile = async () => {
-    const profileResponse = await useGetProfile()
+      const newAccessToken = response.body!.accessToken
 
-    if (isSuccessResponse(profileResponse)) {
-      id.value = profileResponse.body?.profile.id ?? 0
-      avatar.value = profileResponse.body?.profile.avatar ?? ''
-      firstname.value = profileResponse.body?.profile.firstname ?? ''
-      middlename.value = profileResponse.body?.profile.middlename ?? ''
-      lastname.value = profileResponse.body?.profile.lastname ?? ''
-    }
-  }
+      this.$state.token.accessToken = newAccessToken
+      localStorage.setItem(ACCESS_TOKEN_KEY_LOCAL_STORAGE, newAccessToken)
 
-  const updateToken = async (): Promise<boolean> => {
-    const updateTokenResponse = await useRefreshToken()
-
-    if (isSuccessResponse(updateTokenResponse)) {
-      setAccessToken(updateTokenResponse.body?.accessToken ?? '')
-      return true
-    } else {
-      clearState()
-      router.push('/sign-in')
-      return false
-    }
-  }
-
-  return {
-    id,
-    email,
-    firstname,
-    middlename,
-    lastname,
-    avatar,
-    accessToken,
-    refreshToken,
-    isAuth,
-    setAccessToken,
-    setRefreshToken,
-    getProfile,
-    updateToken,
-  }
+      return newAccessToken
+    },
+  },
 })

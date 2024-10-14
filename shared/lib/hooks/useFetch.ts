@@ -1,4 +1,3 @@
-import { useUserStore } from '~/entities/user/index'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
 import type {
   IFetchOptions,
@@ -10,7 +9,8 @@ const UPDATE_TOKEN_ENDPOINT = 'users/update-token'
 
 export async function useFetch<B> (
   endpoint: string,
-  options?: IFetchOptions
+  options?: IFetchOptions,
+  refreshTokenCallback?: () => Promise<string>
 ): Promise<ISuccesResponse<B> | IFailedResponse> {
   try {
     const config = useRuntimeConfig()
@@ -42,14 +42,14 @@ export async function useFetch<B> (
 
       if (
         failedResponse.exception.type === 'Unauthorized' &&
+        refreshTokenCallback &&
         endpoint !== UPDATE_TOKEN_ENDPOINT
       ) {
-        const userStore = useUserStore()
-        const isTokenUpdated = await userStore.updateToken()
+        const updatedAccessToken = await refreshTokenCallback()
 
-        if (isTokenUpdated && options?.headers?.Authorization) {
-          options.headers.Authorization = userStore.accessToken
-          return await useFetch<B>(endpoint, options)
+        if (updatedAccessToken && options?.headers?.Authorization) {
+          options.headers.Authorization = updatedAccessToken
+          return await useFetch<B>(endpoint, options, refreshTokenCallback)
         }
       }
 

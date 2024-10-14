@@ -1,101 +1,96 @@
 <template>
-  <div>
-    <div class="flex gap-1 items-center">
-      <h2 class="font-bold text-2xl">
-        Авторизация
-      </h2>
-
-      <img
-        src="@/widgets/sign-in-form/icons/streak-on.svg"
-        alt="Авторизация"
+  <form-base
+    title="Авторизация"
+    subtitle="Чтобы планировать стало ещё удобнее и увлекательнее"
+    :img="{
+      src: AuthIcon,
+      alt: 'Авторизация',
+    }"
+  >
+    <template #form>
+      <form
+        class="mt-[20px] flex flex-col"
+        @submit.prevent="submitForm"
       >
-    </div>
+        <input-ui
+          id="auth-mail"
+          v-model="formData.mail"
+          type="email"
+          label="Электронная почта"
+          placeholder="plan-board@mail.com"
+          :is-required="true"
+          :is-invalid="validations.mail.$error"
+          @input="validations.mail.$touch()"
+        />
 
-    <p class="mt-[10px] font-light text-xs text-helper-400">
-      Чтобы планировать стало ещё удобнее и увлекательнее
-    </p>
+        <error-label-ui
+          v-for="error in validations.mail.$errors"
+          :key="error.$uid"
+        >
+          {{ error.$message }}
+        </error-label-ui>
 
-    <form
-      class="mt-[20px] flex flex-col"
-      @submit.prevent="submitForm"
-    >
-      <input-ui
-        id="auth-mail"
-        v-model="formData.mail"
-        type="email"
-        label="Электронная почта"
-        placeholder="plan-board@mail.com"
-        :is-required="true"
-        :is-invalid="validations.mail.$error"
-        @input="validations.mail.$touch()"
-      />
+        <input-ui
+          id="auth-password"
+          v-model="formData.password"
+          class="mt-[10px]"
+          type="password"
+          label="Пароль"
+          placeholder="*******"
+          :is-invalid="validations.password.$error"
+          @input="validations.password.$touch()"
+        />
 
-      <error-label-ui
-        v-for="error in validations.mail.$errors"
-        :key="error.$uid"
-      >
-        {{ error.$message }}
+        <error-label-ui
+          v-for="error in validations.password.$errors"
+          :key="error.$uid"
+        >
+          {{ error.$message }}
+        </error-label-ui>
+
+        <button-ui
+          class="mt-[20px]"
+          type="submit"
+          color="accent"
+        >
+          Войти
+        </button-ui>
+      </form>
+
+      <error-label-ui v-if="responseErrorMessage">
+        {{ responseErrorMessage }}
       </error-label-ui>
 
-      <input-ui
-        id="auth-password"
-        v-model="formData.password"
-        class="mt-[10px]"
-        type="password"
-        label="Пароль"
-        placeholder="*******"
-        :is-invalid="validations.password.$error"
-        @input="validations.password.$touch()"
-      />
+      <p class="mt-[20px] text-center font-light text-sm">
+        Ещё нет аккаунта?
+        <nuxt-link
+          class="text-primary-100"
+          to="/sign-up"
+        >
+          Зарегистрироваться
+        </nuxt-link>
+      </p>
 
-      <error-label-ui
-        v-for="error in validations.password.$errors"
-        :key="error.$uid"
-      >
-        {{ error.$message }}
-      </error-label-ui>
-
-      <button-ui
-        class="mt-[20px]"
-        type="submit"
-        color="accent"
-      >
-        Войти
-      </button-ui>
-    </form>
-
-    <error-label-ui v-if="responseErrorMessage">
-      {{ responseErrorMessage }}
-    </error-label-ui>
-
-    <p class="mt-[20px] text-center font-light text-sm">
-      Ещё нет аккаунта?
       <nuxt-link
-        class="text-primary-100"
-        to="/sign-up"
+        class="block mt-[10px] text-center font-light text-sm text-primary-100"
+        to="/password-recovery"
       >
-        Зарегистрироваться
+        Забыли пароль?
       </nuxt-link>
-    </p>
-
-    <nuxt-link
-      class="block mt-[10px] text-center font-light text-sm text-primary-100"
-      to="/password-recovery"
-    >
-      Забыли пароль?
-    </nuxt-link>
-  </div>
+    </template>
+  </form-base>
 </template>
 
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { customValidators } from '~/shared/const/customValidators'
-import { useAuth } from '~/widgets/sign-in-form/api/useAuth'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
-import { useUserStore } from '~/entities/user/index'
+import { useUserStore, UserApi } from '~/entities/user'
+import { FormBase } from '~/widgets/form-base'
 import InputUi from '~/shared/ui/InputUi.vue'
 import ButtonUi from '~/shared/ui/ButtonUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
+import AuthIcon from '~/widgets/sign-in-form/icons/streak-on.svg'
 
 const responseErrorMessage = ref('')
 const formData = ref({
@@ -120,20 +115,19 @@ const validateRules = computed(() => {
 const validations = useVuelidate(validateRules, formData)
 const userStore = useUserStore()
 const router = useRouter()
+const userApi = new UserApi()
 
 const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
-    const response = await useAuth(
+    const response = await userApi.auth(
       formData.value.mail,
       formData.value.password
     )
 
-    if (isSuccessResponse(response)) {
-      userStore.email = formData.value.mail
-      userStore.setAccessToken(response.body?.accessToken ?? '')
-      userStore.setRefreshToken(response.body?.refreshToken ?? '')
+    if (isSuccessResponse(response) && response.body) {
+      userStore.setToken(response.body)
       userStore.getProfile()
 
       router.push('/files')

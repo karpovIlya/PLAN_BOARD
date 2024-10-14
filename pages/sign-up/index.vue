@@ -1,6 +1,6 @@
 <template>
   <main class="flex justify-center items-center h-[100vh]">
-    <div class="lg:w-[40%] md:w-[50%] sm:w-[60%] p-[20px]">
+    <div class="md:w-[450px] sm:w-[60%] p-[20px]">
       <sign-up-form />
     </div>
   </main>

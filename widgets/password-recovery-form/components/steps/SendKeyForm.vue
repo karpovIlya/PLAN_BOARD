@@ -1,50 +1,45 @@
 <template>
-  <div>
-    <div class="flex gap-1 items-center">
-      <h2 class="font-bold text-2xl">
-        Код восстановления
-      </h2>
+  <form-base
+    title="Код восстановления"
+    subtitle="На указанную почту отправлен код для восстановления пароля"
+    :img="{
+      src: VerifyCodeIcon,
+      alt: 'Код восстановления',
+    }"
+  >
+    <template #form>
+      <otp-pad-ui
+        class="mt-[20px]"
+        :length="6"
+        @filled-otp="(otp: number) => submitForm(otp)"
+      />
 
-      <img
-        src="@/widgets/password-recovery-form/icons/сertificate.svg"
-        alt="Код восстановления"
-      >
-    </div>
-
-    <p class="mt-[10px] font-light text-xs text-helper-400">
-      На указанную почту отправлен код для восстановления пароля
-    </p>
-
-    <otp-pad-ui
-      class="mt-[20px]"
-      :length="6"
-      @filled-otp="(otp: number) => submitForm(otp)"
-    />
-
-    <error-label-ui v-if="responseErrorMessage">
-      {{ responseErrorMessage }}
-    </error-label-ui>
-  </div>
+      <error-label-ui v-if="responseErrorMessage">
+        {{ responseErrorMessage }}
+      </error-label-ui>
+    </template>
+  </form-base>
 </template>
 
 <script setup lang="ts">
-import { useVerifyCode } from '~/widgets/password-recovery-form/api/useVerifyCode'
+import { useUserStore, UserApi } from '~/entities/user'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
-// eslint-disable-next-line max-len
-import { usePasswordRecoveryStore } from '~/widgets/password-recovery-form/store/usePasswordRecoveryStore'
+import { FormBase } from '~/widgets/form-base'
 import OtpPadUi from '~/shared/ui/OtpPadUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
+import VerifyCodeIcon from '~/widgets/password-recovery-form/icons/сertificate.svg'
 
 const emits = defineEmits(['submit-key'])
-const passwordRecoveryStore = usePasswordRecoveryStore()
+
+const userStore = useUserStore()
+const userApi = new UserApi()
+
 const responseErrorMessage = ref('')
 
 const submitForm = async (otp: number) => {
-  passwordRecoveryStore.recoveryCode = otp.toString()
-
-  const response = await useVerifyCode(
-    passwordRecoveryStore.recoveryEmail,
-    passwordRecoveryStore.recoveryCode
+  const response = await userApi.verifyCode(
+    userStore.profile.email,
+    otp.toString()
   )
 
   if (isSuccessResponse(response)) {

@@ -1,51 +1,49 @@
 <template>
-  <div>
-    <h2 class="font-bold text-2xl">
-      Введите код для подтверждение почты
-    </h2>
+  <form-base
+    title="Введите код для подтверждение почты"
+    subtitle="На указанную почту отправлен код для ее подтверждения"
+  >
+    <template #form>
+      <otp-pad-ui
+        class="mt-[20px]"
+        :length="6"
+        @filled-otp="(otp: number) => submitForm(otp)"
+      />
 
-    <p class="mt-[10px] font-light text-xs text-helper-400">
-      На указанную почту отправлен код для ее подтверждения
-    </p>
-
-    <otp-pad-ui
-      class="mt-[20px]"
-      :length="6"
-      @filled-otp="(otp: number) => submitForm(otp)"
-    />
-
-    <error-label-ui v-if="errorMessage">
-      {{ errorMessage }}
-    </error-label-ui>
-  </div>
+      <error-label-ui v-if="responseErrorMessage">
+        {{ responseErrorMessage }}
+      </error-label-ui>
+    </template>
+  </form-base>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '~/entities/user/index'
-import { useEmailVerify } from '~/widgets/sign-up-form/api/useEmailVerify'
+import { useUserStore, UserApi } from '~/entities/user'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
+import { FormBase } from '~/widgets/form-base'
 import OtpPadUi from '~/shared/ui/OtpPadUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
 const emits = defineEmits(['email-verify'])
+const userApi = new UserApi()
 const userStore = useUserStore()
 const router = useRouter()
 
-const errorMessage = ref('')
+const responseErrorMessage = ref('')
 
 const submitForm = async (verificationCode: number) => {
-  const response = await useEmailVerify(
-    userStore.email,
+  const response = await userApi.emailVerify(
+    userStore.profile.email,
     verificationCode
   )
 
-  if (isSuccessResponse(response)) {
-    userStore.setAccessToken(response.body?.accessToken ?? '')
-    userStore.setRefreshToken(response.body?.refreshToken ?? '')
+  if (isSuccessResponse(response) && response.body) {
+    userStore.setToken(response.body)
+    userStore.getProfile()
 
     router.push('/files')
   } else {
-    errorMessage.value = response.exception.message
+    responseErrorMessage.value = response.exception.message
   }
 
   emits('email-verify')

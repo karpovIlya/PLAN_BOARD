@@ -1,58 +1,53 @@
 <template>
-  <div>
-    <h2 class="font-bold text-2xl">
-      Восстановление пароля
-    </h2>
-
-    <p class="mt-[10px] font-light text-xs text-helper-400">
-      Введите ваш e-mail.
-      Мы вышлем код восстановления пароля
-    </p>
-
-    <form
-      class="mt-[20px] flex flex-col"
-      @submit.prevent="submitForm"
-    >
-      <InputUi
-        id="recovery-mail"
-        v-model="formData.mail"
-        type="email"
-        label="Электронная почта"
-        placeholder="plan-board@mail.com"
-        :is-required="true"
-        :is-invalid="validations.mail.$error"
-        @input="validations.mail.$touch()"
-      />
-
-      <error-label-ui
-        v-for="error in validations.mail.$errors"
-        :key="error.$uid"
+  <form-base
+    title="Восстановление пароля"
+    subtitle="Введите ваш e-mail. Мы вышлем код восстановления пароля"
+  >
+    <template #form>
+      <form
+        class="mt-[20px] flex flex-col"
+        @submit.prevent="submitForm"
       >
-        {{ error.$message }}
+        <InputUi
+          id="recovery-mail"
+          v-model="formData.mail"
+          type="email"
+          label="Электронная почта"
+          placeholder="plan-board@mail.com"
+          :is-required="true"
+          :is-invalid="validations.mail.$error"
+          @input="validations.mail.$touch()"
+        />
+
+        <error-label-ui
+          v-for="error in validations.mail.$errors"
+          :key="error.$uid"
+        >
+          {{ error.$message }}
+        </error-label-ui>
+
+        <button-ui
+          class="mt-[20px]"
+          type="submit"
+          color="accent"
+        >
+          Отправить код
+        </button-ui>
+      </form>
+
+      <error-label-ui v-if="responseErrorMessage">
+        {{ responseErrorMessage }}
       </error-label-ui>
-
-      <button-ui
-        class="mt-[20px]"
-        type="submit"
-        color="accent"
-      >
-        Отправить код
-      </button-ui>
-    </form>
-
-    <error-label-ui v-if="responseErrorMessage">
-      {{ responseErrorMessage }}
-    </error-label-ui>
-  </div>
+    </template>
+  </form-base>
 </template>
 
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { customValidators } from '~/shared/const/customValidators'
-import { useForgetPassword } from '~/widgets/password-recovery-form/api/useForgetPassword'
-// eslint-disable-next-line max-len
-import { usePasswordRecoveryStore } from '~/widgets/password-recovery-form/store/usePasswordRecoveryStore'
+import { useUserStore, UserApi } from '~/entities/user'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
+import { FormBase } from '~/widgets/form-base'
 import InputUi from '~/shared/ui/InputUi.vue'
 import ButtonUi from '~/shared/ui/ButtonUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
@@ -74,16 +69,17 @@ const validateRules = computed(() => {
 })
 
 const validations = useVuelidate(validateRules, formData)
-const passwordRecoveryStore = usePasswordRecoveryStore()
+const userStore = useUserStore()
+const userApi = new UserApi()
 
 const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
-    const response = await useForgetPassword(formData.value.mail)
+    const response = await userApi.forgetPassword(formData.value.mail)
 
     if (isSuccessResponse(response)) {
-      passwordRecoveryStore.recoveryEmail = formData.value.mail
+      userStore.profile.email = formData.value.mail
       emits('submit-mail')
     } else {
       responseErrorMessage.value = response.exception.message
