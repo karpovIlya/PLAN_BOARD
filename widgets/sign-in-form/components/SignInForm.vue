@@ -13,11 +13,10 @@
         @submit.prevent="submitForm"
       >
         <input-ui
-          id="auth-mail"
           v-model="formData.mail"
           type="email"
           label="Электронная почта"
-          placeholder="plan-board@mail.com"
+          placeholder="planboard@yandex.ru"
           :is-required="true"
           :is-invalid="validations.mail.$error"
           @input="validations.mail.$touch()"
@@ -31,7 +30,6 @@
         </error-label-ui>
 
         <input-ui
-          id="auth-password"
           v-model="formData.password"
           class="mt-[10px]"
           type="password"
@@ -115,16 +113,15 @@ const validateRules = computed(() => {
 const validations = useVuelidate(validateRules, formData)
 const userStore = useUserStore()
 const router = useRouter()
-const userApi = new UserApi()
 
 const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
-    const response = await userApi.auth(
-      formData.value.mail,
-      formData.value.password
-    )
+    const response = await UserApi.auth({
+      userEmail: formData.value.mail,
+      userPassword: formData.value.password,
+    })
 
     if (isSuccessResponse(response) && response.body) {
       userStore.setToken(response.body)

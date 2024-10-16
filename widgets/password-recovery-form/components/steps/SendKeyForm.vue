@@ -32,15 +32,14 @@ import VerifyCodeIcon from '~/widgets/password-recovery-form/icons/сertificate.
 const emits = defineEmits(['submit-key'])
 
 const userStore = useUserStore()
-const userApi = new UserApi()
 
 const responseErrorMessage = ref('')
 
 const submitForm = async (otp: number) => {
-  const response = await userApi.verifyCode(
-    userStore.profile.email,
-    otp.toString()
-  )
+  const response = await UserApi.verifyCode({
+    recoveryEmail: userStore.profile.email,
+    recoveryCode: otp.toString(),
+  })
 
   if (isSuccessResponse(response)) {
     emits('submit-key')

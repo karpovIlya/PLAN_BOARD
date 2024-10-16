@@ -8,8 +8,7 @@
         class="mt-[20px] flex flex-col"
         @submit.prevent="submitForm"
       >
-        <InputUi
-          id="recovery-password"
+        <input-ui
           v-model="formData.newPassword"
           type="password"
           label="Новый пароль"
@@ -54,7 +53,6 @@ import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
-const userApi = new UserApi()
 
 const responseErrorMessage = ref('')
 const formData = ref({
@@ -77,10 +75,10 @@ const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
-    const response = await userApi.setPassword(
-      userStore.profile.email,
-      formData.value.newPassword
-    )
+    const response = await UserApi.setPassword({
+      recoveryEmail: userStore.profile.email,
+      password: formData.value.newPassword,
+    })
 
     if (isSuccessResponse(response) && response.body) {
       userStore.setToken(response.body)

@@ -3,7 +3,7 @@ import {
   email,
   minLength,
   alphaNum,
-  alpha,
+  // alpha,
   helpers
 } from '@vuelidate/validators'
 
@@ -24,8 +24,8 @@ export const customValidators = {
     'Значение должно быть буквенно-цифровым',
     alphaNum
   ),
-  alpha: helpers.withMessage(
-    'Значение должно быть буквенным',
-    alpha
+  alphaCyrillic: helpers.withMessage(
+    'Значение должно содержать только буквы (латиница или кириллица)',
+    (value: string) => /^[A-Za-zА-Яа-яЁё]+$/.test(value)
   ),
 }

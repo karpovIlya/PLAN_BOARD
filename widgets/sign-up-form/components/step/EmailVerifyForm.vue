@@ -25,17 +25,16 @@ import OtpPadUi from '~/shared/ui/OtpPadUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
 const emits = defineEmits(['email-verify'])
-const userApi = new UserApi()
 const userStore = useUserStore()
 const router = useRouter()
 
 const responseErrorMessage = ref('')
 
 const submitForm = async (verificationCode: number) => {
-  const response = await userApi.emailVerify(
-    userStore.profile.email,
-    verificationCode
-  )
+  const response = await UserApi.emailVerify({
+    userEmail: userStore.profile.email,
+    verifyCode: verificationCode,
+  })
 
   if (isSuccessResponse(response) && response.body) {
     userStore.setToken(response.body)

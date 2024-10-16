@@ -3,9 +3,16 @@ import { useUserStore } from '~/entities/user'
 import type { IToken, IAccessTokenOnly } from '~/entities/user/model/Token.interface'
 import type { IUserId } from '~/entities/user/model/UserId.interface'
 import type { IProfile } from '~/entities/user/model/User.interface'
+import type {
+  ISetPasswordParams,
+  IVerifyCodeParams,
+  IAuthParams,
+  IEmailVerifyParams,
+  IPostNewUserParams
+} from '~/entities/user/model/UserApi.interface'
 
 export default class UserApi {
-  async forgetPassword (recoveryEmail: string) {
+  static async forgetPassword (recoveryEmail: string) {
     return await useFetch<null>(
       'users/forget-password',
       {
@@ -17,89 +24,73 @@ export default class UserApi {
     )
   }
 
-  async setPassword (
-    recoveryEmail: string,
-    newPassword: string
-  ) {
+  static async setPassword (newPasswordParams: ISetPasswordParams) {
     return await useFetch<IToken>(
       'users/set-password',
       {
         method: 'PUT',
         body: {
-          email: recoveryEmail,
-          password: newPassword,
+          email: newPasswordParams.recoveryEmail,
+          password: newPasswordParams.password,
         },
       }
     )
   }
 
-  async verifyCode (
-    recoveryEmail: string,
-    recoveryCode: string
-  ) {
+  static async verifyCode (verifyCode: IVerifyCodeParams) {
     return await useFetch<null>(
       'users/verify-code',
       {
         method: 'POST',
         body: {
-          email: recoveryEmail,
-          code: recoveryCode,
+          email: verifyCode.recoveryEmail,
+          code: verifyCode.recoveryCode,
         },
       }
     )
   }
 
-  async auth (
-    userEmail: string,
-    userPassword: string
-  ) {
+  static async auth (authParams: IAuthParams) {
     return await useFetch<IToken>(
       'users/login',
       {
         method: 'POST',
         body: {
-          email: userEmail,
-          password: userPassword,
+          email: authParams.userEmail,
+          password: authParams.userPassword,
         },
       }
     )
   }
 
-  async emailVerify (
-    userEmail: string,
-    verificationCode: number
-  ) {
+  static async emailVerify (emailVerifyParams: IEmailVerifyParams) {
     return await useFetch<IToken>(
       'users/email-verify',
       {
         method: 'POST',
         body: {
-          email: userEmail,
-          code: verificationCode,
+          email: emailVerifyParams.userEmail,
+          code: emailVerifyParams.verifyCode,
         },
       }
     )
   }
 
-  async postNewUser (
-    userEmail: string,
-    userPassword: string,
-    userName: string
-  ) {
+  static async postNewUser (newUserParams: IPostNewUserParams) {
     return await useFetch<IUserId>(
       'users/sign-up',
       {
         method: 'POST',
         body: {
-          email: userEmail,
-          password: userPassword,
-          firstname: userName,
+          email: newUserParams.userEmail,
+          password: newUserParams.userPassword,
+          firstname: newUserParams.userName,
         },
       }
     )
   }
 
-  async getProfile (currentAccessToken: string) {
+  static async getProfile (currentAccessToken: string) {
     return await useFetch<IProfile>(
       'users/profile',
       {
@@ -111,7 +102,7 @@ export default class UserApi {
     )
   }
 
-  async checkToken (currentRefreshToken: string) {
+  static async checkToken (currentRefreshToken: string) {
     return await useFetch<IProfile>(
       'users/check-token',
       {
@@ -123,7 +114,7 @@ export default class UserApi {
     )
   }
 
-  async refreshToken (currentRefreshToken: string) {
+  static async refreshToken (currentRefreshToken: string) {
     return await useFetch<IAccessTokenOnly>(
       'users/update-token',
       {

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-1">
     <label
-      :for="props.id"
+      :for="inputUUID"
       class="text-helper-300 text-sm font-normal"
     >
       {{ props.label }}
@@ -9,7 +9,7 @@
 
     <div class="relative">
       <input
-        :id="props.id"
+        :id="inputUUID"
         class="
           block w-full py-2.5 px-4 bg-neutral-300 border
           text-helper-200 text-sm rounded-md focus:outline-none
@@ -45,12 +45,13 @@
 </template>
 
 <script setup lang="ts">
+import { uuid } from 'vue-uuid'
+
 type TInputType = 'text' | 'email' | 'password'
 
 interface IProps {
   type: TInputType
   modelValue: string
-  id: string
   label?: string
   placeholder?: string
   isRequired?: boolean
@@ -62,7 +63,6 @@ const props = withDefaults(
   {
     type: 'text',
     modelValue: '',
-    id: '',
     label: '',
     placeholder: 'some placeholder',
     isRequired: false,
@@ -70,6 +70,7 @@ const props = withDefaults(
   }
 )
 const emits = defineEmits(['update:modelValue'])
+const inputUUID = ref(uuid.v1())
 const isPasswordVisible = ref(false)
 
 const usedInputType = computed((): TInputType => {

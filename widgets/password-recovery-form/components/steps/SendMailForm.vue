@@ -8,12 +8,12 @@
         class="mt-[20px] flex flex-col"
         @submit.prevent="submitForm"
       >
-        <InputUi
-          id="recovery-mail"
+        <input-ui
+
           v-model="formData.mail"
           type="email"
           label="Электронная почта"
-          placeholder="plan-board@mail.com"
+          placeholder="planboard@yandex.ru"
           :is-required="true"
           :is-invalid="validations.mail.$error"
           @input="validations.mail.$touch()"
@@ -70,13 +70,12 @@ const validateRules = computed(() => {
 
 const validations = useVuelidate(validateRules, formData)
 const userStore = useUserStore()
-const userApi = new UserApi()
 
 const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
-    const response = await userApi.forgetPassword(formData.value.mail)
+    const response = await UserApi.forgetPassword(formData.value.mail)
 
     if (isSuccessResponse(response)) {
       userStore.profile.email = formData.value.mail

@@ -6,9 +6,6 @@ export default defineNuxtConfig({
       API_URL: process.env.API_URL || 'http://127.0.0.1:9456/',
     },
   },
-  plugins: [
-    { src: '~/plugins/getProfile.ts', }
-  ],
   postcss: {
     plugins: {
       tailwindcss: {},

@@ -13,11 +13,10 @@
         @submit.prevent="submitForm"
       >
         <input-ui
-          id="sign-up-name"
           v-model="formData.name"
           type="text"
           label="Ваше имя"
-          placeholder="Ivan"
+          placeholder="Иван"
           :is-required="true"
           :is-invalid="validations.name.$error"
           @input="validations.name.$touch()"
@@ -31,12 +30,11 @@
         </error-label-ui>
 
         <input-ui
-          id="sign-up-mail"
           v-model="formData.mail"
           class="mt-[10px]"
           type="email"
           label="Электронная почта"
-          placeholder="plan-board@mail.com"
+          placeholder="planboard@yandex.ru"
           :is-required="true"
           :is-invalid="validations.mail.$error"
           @input="validations.mail.$touch()"
@@ -50,7 +48,6 @@
         </error-label-ui>
 
         <input-ui
-          id="sign-up-password"
           v-model="formData.password"
           class="mt-[10px]"
           type="password"
@@ -126,7 +123,7 @@ const formData = ref({
 const validateRules = computed(() => {
   return {
     name: {
-      alpha: customValidators.alpha,
+      alpha: customValidators.alphaCyrillic,
       required: customValidators.required,
     },
     mail: {
@@ -143,17 +140,16 @@ const validateRules = computed(() => {
 
 const validations = useVuelidate(validateRules, formData)
 const userStore = useUserStore()
-const userApi = new UserApi()
 
 const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
-    const response = await userApi.postNewUser(
-      formData.value.mail,
-      formData.value.password,
-      formData.value.name
-    )
+    const response = await UserApi.postNewUser({
+      userEmail: formData.value.mail,
+      userPassword: formData.value.password,
+      userName: formData.value.name,
+    })
 
     if (isSuccessResponse(response)) {
       userStore.profile.email = formData.value.mail
