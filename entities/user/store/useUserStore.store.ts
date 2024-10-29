@@ -44,10 +44,7 @@ export const useUserStore = defineStore('user-store', {
       const response = await UserApi.refreshToken(this.$state.token.refreshToken)
 
       if (!isSuccessResponse(response) || !response.body?.accessToken) {
-        const router = useRouter()
-
         this.clearState()
-        router.push('/sign-in')
         return ''
       }
 

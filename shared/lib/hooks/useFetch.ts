@@ -53,9 +53,22 @@ export async function useFetch<B> (
         }
       }
 
+      switch (failedResponse.status) {
+      case 404:
+      case 500:
+      case 401:
+      case 403:
+        throw createError({
+          statusCode: failedResponse.status,
+          statusMessage: failedResponse.exception.message,
+        })
+      }
+
       return failedResponse
     }
 
-    throw error
+    throw createError({
+      statusCode: 500,
+    })
   }
 }

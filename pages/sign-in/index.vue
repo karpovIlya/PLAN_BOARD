@@ -1,11 +1,14 @@
 <template>
-  <main class="flex justify-center items-center h-[100vh]">
-    <div class="md:w-[450px] sm:w-[60%] p-[20px]">
+  <main>
+    <form-template :image-src="SignInImage">
       <sign-in-form />
-    </div>
+    </form-template>
   </main>
 </template>
 
 <script setup lang="ts">
-import { SignInForm } from '~/widgets/sign-in-form/index'
+import { FormTemplate } from '~/widgets/form-template'
+import { SignInForm } from '~/widgets/sign-in-form'
+
+import SignInImage from '~/assets/images/authentication/signin.png'
 </script>

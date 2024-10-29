@@ -1,11 +1,14 @@
 <template>
-  <main class="flex justify-center items-center h-[100vh]">
-    <div class="md:w-[450px] sm:w-[60%] p-[20px]">
+  <main>
+    <form-template :image-src="VerifyPasswordImage">
       <password-recovery-form />
-    </div>
+    </form-template>
   </main>
 </template>
 
 <script setup lang="ts">
+import { FormTemplate } from '~/widgets/form-template'
 import { PasswordRecoveryForm } from '~/widgets/password-recovery-form/index'
+
+import VerifyPasswordImage from '~/assets/images/authentication/verify-password.png'
 </script>

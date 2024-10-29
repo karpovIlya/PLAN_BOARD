@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
+    './*.{js,vue,ts}',
     './pages/**/*.{js,vue,ts}',
     './widgets/**/*.{js,vue,ts}',
     './features/**/*.{js,vue,ts}',
@@ -38,6 +39,7 @@ export default {
       },
       background: {
         100: '#F5F5F5',
+        200: '#E1E1E1',
       },
     },
   },

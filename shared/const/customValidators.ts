@@ -3,7 +3,6 @@ import {
   email,
   minLength,
   alphaNum,
-  // alpha,
   helpers
 } from '@vuelidate/validators'
 
