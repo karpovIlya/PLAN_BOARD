@@ -1,8 +1,8 @@
 <template>
-  <nuxt-link to="/">
+  <nuxt-link :to="props.link">
     <svg
-      width="80"
-      height="45"
+      :width="props.width"
+      :height="props.height"
       viewBox="0 0 80 45"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -82,3 +82,16 @@
     </svg>
   </nuxt-link>
 </template>
+
+<script setup lang="ts">
+interface IProps {
+  link?: string
+  width?: number
+  height?: number
+}
+
+const props = withDefaults(
+  defineProps<IProps>(),
+  { link: '/', width: 80, height: 45, }
+)
+</script>

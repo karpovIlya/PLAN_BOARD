@@ -37,6 +37,8 @@ export async function useFetch<B> (
 
     return data as ISuccesResponse<B>
   } catch (error: any) {
+    const nuxtError = useError()
+
     if ('status' in error) {
       const failedResponse = error as IFailedResponse
 
@@ -58,17 +60,21 @@ export async function useFetch<B> (
       case 500:
       case 401:
       case 403:
-        throw createError({
+        nuxtError.value = createError({
           statusCode: failedResponse.status,
           statusMessage: failedResponse.exception.message,
+          fatal: true,
         })
+        throw nuxtError
       }
 
       return failedResponse
     }
 
-    throw createError({
+    nuxtError.value = createError({
       statusCode: 500,
+      fatal: true,
     })
+    throw nuxtError
   }
 }

@@ -9,7 +9,6 @@
         @submit.prevent="submitForm"
       >
         <input-ui
-
           v-model="formData.mail"
           type="email"
           label="Электронная почта"

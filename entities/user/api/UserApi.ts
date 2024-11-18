@@ -90,37 +90,43 @@ export default class UserApi {
     )
   }
 
-  static async getProfile (currentAccessToken: string) {
+  static async getProfile () {
+    const userStore = useUserStore()
+
     return await useFetch<IProfile>(
       'users/profile',
       {
         headers: {
-          Authorization: currentAccessToken,
+          Authorization: userStore.token.accessToken,
         },
       },
-      useUserStore().updateAccessToken
+      userStore.updateAccessToken
     )
   }
 
-  static async checkToken (currentRefreshToken: string) {
+  static async checkToken () {
+    const userStore = useUserStore()
+
     return await useFetch<IProfile>(
       'users/check-token',
       {
         headers: {
-          Authorization: currentRefreshToken,
+          Authorization: userStore.token.refreshToken,
         },
       },
-      useUserStore().updateAccessToken
+      userStore.updateAccessToken
     )
   }
 
-  static async refreshToken (currentRefreshToken: string) {
+  static async refreshToken () {
+    const userStore = useUserStore()
+
     return await useFetch<IAccessTokenOnly>(
       'users/update-token',
       {
         method: 'POST',
         body: {
-          token: currentRefreshToken,
+          token: userStore.token.refreshToken,
         },
       }
     )

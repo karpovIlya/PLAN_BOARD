@@ -30,18 +30,18 @@ export const useUserStore = defineStore('user-store', {
       this.$state.token = token
     },
     async checkAuth () {
-      const response = await UserApi.checkToken(this.$state.token.refreshToken)
+      const response = await UserApi.checkToken()
       return isSuccessResponse(response)
     },
     async getProfile () {
-      const response = await UserApi.getProfile(this.$state.token.accessToken)
+      const response = await UserApi.getProfile()
 
       if (isSuccessResponse(response) && response.body?.profile) {
         this.$state.profile = response.body?.profile
       }
     },
     async updateAccessToken () {
-      const response = await UserApi.refreshToken(this.$state.token.refreshToken)
+      const response = await UserApi.refreshToken()
 
       if (!isSuccessResponse(response) || !response.body?.accessToken) {
         this.clearState()

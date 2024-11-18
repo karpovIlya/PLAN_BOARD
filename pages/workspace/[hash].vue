@@ -1,6 +1,6 @@
 <template>
-  <main class="text-5xl">
-    Workspace
+  <main>
+    {{ route.params.hash }}
   </main>
 </template>
 
@@ -8,4 +8,6 @@
 definePageMeta({
   middleware: 'auth',
 })
+
+const route = useRoute()
 </script>
