@@ -20,4 +20,5 @@ export interface IBodyList {
 
 export interface IBodyCatalog {
   catalog: TCatalog
+  currentDirectory: IDirectoryEntity
 }

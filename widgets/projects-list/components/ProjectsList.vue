@@ -24,13 +24,12 @@ onMounted(async () => {
   const route = useRoute()
 
   if (
-    route.params.id &&
-    typeof route.params.id === 'string' &&
-    !isNaN(parseInt(route.params.id))
+    route.params.hash &&
+    typeof route.params.hash === 'string'
   ) {
-    projectStore.currentDirectoryId = parseInt(route.params.id)
+    projectStore.currentDirectoryHash = route.params.hash
   } else {
-    projectStore.currentDirectoryId = 0
+    projectStore.currentDirectoryHash = ''
   }
 
   await projectStore.updateCurrentCatalog()

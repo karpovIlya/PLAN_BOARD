@@ -91,31 +91,11 @@ export default class UserApi {
   }
 
   static async getProfile () {
-    const userStore = useUserStore()
-
-    return await useFetch<IProfile>(
-      'users/profile',
-      {
-        headers: {
-          Authorization: userStore.token.accessToken,
-        },
-      },
-      userStore.updateAccessToken
-    )
+    return await useFetch<IProfile>('users/profile')
   }
 
   static async checkToken () {
-    const userStore = useUserStore()
-
-    return await useFetch<IProfile>(
-      'users/check-token',
-      {
-        headers: {
-          Authorization: userStore.token.refreshToken,
-        },
-      },
-      userStore.updateAccessToken
-    )
+    return await useFetch<IProfile>('users/check-token')
   }
 
   static async refreshToken () {

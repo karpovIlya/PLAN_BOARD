@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import { getCorrectDeclination } from '~/shared/lib/helpers/getCorrectDeclination'
 import type {
   ICatalogWorkspace,
   ICatalogDirectory
@@ -86,8 +87,13 @@ const convertedProjectData = ref({
     if (props.projectData.type !== 'directory') {
       return ''
     }
+    const amountOfFiles = (props.projectData as ICatalogDirectory).length
+    const wordWithCorrectDeclination = getCorrectDeclination(
+      amountOfFiles,
+      ['файл', 'файла', 'файлов']
+    )
 
-    return `${(props.projectData as ICatalogDirectory).filesID.length} файлов`
+    return amountOfFiles + ' ' + wordWithCorrectDeclination
   }),
 })
 
@@ -96,7 +102,7 @@ const openProject = () => {
 
   switch (props.projectData.type) {
   case 'directory':
-    router.push(`/files/${props.projectData.id}`)
+    router.push(`/files/${props.projectData.hash}`)
     break
   case 'workspace':
     router.push(`/workspace/${props.projectData.hash}`)

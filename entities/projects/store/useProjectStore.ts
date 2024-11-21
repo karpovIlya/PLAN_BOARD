@@ -6,7 +6,8 @@ import type { IBodyList, TCatalog } from '~/entities/projects/model/Api.interfac
 interface IState {
   list: IBodyList
   catalog: TCatalog
-  currentDirectoryId: number,
+  currentDirectoryHash: string
+  currentDirectoryId: number | null
 }
 
 export const useProjectStore = defineStore('project-store', {
@@ -16,12 +17,13 @@ export const useProjectStore = defineStore('project-store', {
       directories: [],
     },
     catalog: [],
-    currentDirectoryId: 0,
+    currentDirectoryHash: '',
+    currentDirectoryId: null,
   }),
   actions: {
     async updateCurrentCatalog () {
       const updatedCatalogResponse = await ProjectApi.getCatalog(
-        this.$state.currentDirectoryId
+        this.$state.currentDirectoryHash
       )
 
       if (
@@ -29,6 +31,7 @@ export const useProjectStore = defineStore('project-store', {
         updatedCatalogResponse.body?.catalog
       ) {
         this.$state.catalog = updatedCatalogResponse.body?.catalog
+        this.$state.currentDirectoryId = updatedCatalogResponse.body.currentDirectory.id
       }
 
       return updatedCatalogResponse

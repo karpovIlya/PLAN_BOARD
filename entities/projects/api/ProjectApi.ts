@@ -1,5 +1,4 @@
 import { useFetch } from '~/shared/lib/hooks/useFetch'
-import { useUserStore } from '~/entities/user'
 import type {
   IBodyWorkspace,
   IBodyList,
@@ -7,71 +6,41 @@ import type {
 } from '~/entities/projects/model/Api.interface'
 
 export default class ProjectApi {
-  static async createWorkspace (currentDirectoryID?: number) {
-    const userStore = useUserStore()
-
+  static async createWorkspace (currentDirectoryId?: number | null) {
     return await useFetch<IBodyWorkspace>(
       'projects/workspace',
       {
         method: 'POST',
-        headers: {
-          Authorization: userStore.token.accessToken,
-        },
         body: {
-          directoryID: currentDirectoryID,
+          directoryID: currentDirectoryId,
         },
-      },
-      userStore.updateAccessToken
+      }
     )
   }
 
   static async createDirectory (
     directoryName: string,
-    currentDirectoryID?: number
+    currentDirectoryId?: number | null
   ) {
-    const userStore = useUserStore()
-
     return await useFetch<null>(
       'projects/create-directory',
       {
         method: 'POST',
-        headers: {
-          Authorization: userStore.token.accessToken,
-        },
         body: {
           name: directoryName,
-          directoryID: currentDirectoryID,
+          directoryID: currentDirectoryId,
         },
-      },
-      userStore.updateAccessToken
+      }
     )
   }
 
-  static async getCatalog (currentId?: number) {
-    const userStore = useUserStore()
-
+  static async getCatalog (currentDirectoryHash?: string) {
     return await useFetch<IBodyCatalog>(
-      'projects/catalog' + (currentId ? `/${currentId}` : ''),
-      {
-        headers: {
-          Authorization: userStore.token.accessToken,
-        },
-      },
-      userStore.updateAccessToken
+      'projects/catalog' + (currentDirectoryHash ? `/${currentDirectoryHash}` : '')
     )
   }
 
   static async getProjectsList () {
-    const userStore = useUserStore()
-
-    return await useFetch<IBodyList>(
-      'projects/list',
-      {
-        headers: {
-          Authorization: userStore.token.accessToken,
-        },
-      },
-      userStore.updateAccessToken
-    )
+    return await useFetch<IBodyList>('projects/list')
   }
 }

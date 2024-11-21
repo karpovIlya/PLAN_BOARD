@@ -20,11 +20,15 @@
 
 <script setup lang="ts">
 import { FormBase } from '~/widgets/form-base'
-import { CREATE_PROJECT_TABS } from '~/widgets/create-project-form/const/Tabs'
+import type { ITabElement } from '~/shared/model/TabElement.interface'
 import DirectoryForm from '~/widgets/create-project-form/components/DirectoryForm.vue'
 import WorkspaceForm from '~/widgets/create-project-form/components//WorkspaceForm.vue'
 import TabUi from '~/shared/ui/TabUi.vue'
 
+const CREATE_PROJECT_TABS: ITabElement[] = [
+  { id: 1, content: 'Директория', },
+  { id: 2, content: 'Рабочая область', }
+]
 const activeTabId = ref(1)
 const currentComponent = computed(() => {
   switch (activeTabId.value) {

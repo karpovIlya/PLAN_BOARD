@@ -3,6 +3,7 @@ import type { IUser } from '~/entities/user'
 export interface IDirectoryEntity {
   id: number
   parrentID: number
+  length: number
   filesID: number[]
   hash: string
   name: string
