@@ -1,28 +1,22 @@
-import type { IUser } from '~/entities/user'
-
-interface IWorkspaceSettings {
+export interface IWorkspaceBase {
+  id: number
+  autorID: number
+  participantsID: number[]
+  parantID: number | null
+  avatar: string | null
+  name: string
+  hash: string
+  created: string
+  lastUpdate: string
+  createdAt: string
+  updatedAt: string
   showCursors: boolean
   showNameOnCursor: boolean
   isCanJoinAnonyme: boolean
   autoAcceptUsers: boolean
 }
 
-export interface IWorkspaceEntity {
-  id: number
-  autorID: number
-  online: number
-  participantsID: number[]
-  name: string
-  hash: string
-  created: string
-  lastUpdate: string
-  lastUpdated: string
-  avatar: string
-  location: string
-  settings: IWorkspaceSettings
-}
-
-export interface ICatalogWorkspace extends IWorkspaceEntity {
+export interface IWorkspaceExtend extends IWorkspaceBase {
   type: 'workspace'
-  autor: IUser
+  lastUpdated: string
 }

@@ -1,24 +1,25 @@
 import type {
-  IWorkspaceEntity,
-  ICatalogWorkspace
+  IWorkspaceBase,
+  IWorkspaceExtend
 } from '~/entities/projects/model/WorkspaceEntity.interface'
 import type {
-  IDirectoryEntity,
-  ICatalogDirectory
+  IDirectoryBase,
+  IDirectoryExtend
 } from '~/entities/projects/model/DirectoryEntity.interface'
 
-export type TCatalog = Array<ICatalogWorkspace | ICatalogDirectory>
+export type TCatalog = Array<IWorkspaceExtend | IDirectoryExtend>
 
 export interface IBodyWorkspace {
-  workspace: IWorkspaceEntity
+  workspace: IWorkspaceBase
 }
 
 export interface IBodyList {
-  directories: IDirectoryEntity[]
-  workspaces: IWorkspaceEntity[]
+  directories: IDirectoryBase[]
+  workspaces: IWorkspaceBase[]
 }
 
 export interface IBodyCatalog {
   catalog: TCatalog
-  currentDirectory: IDirectoryEntity
+  currentDirectory: IDirectoryBase
+  breadcrumbs: IDirectoryBase[]
 }

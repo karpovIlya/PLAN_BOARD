@@ -45,17 +45,16 @@
 </template>
 
 <script setup lang="ts">
-import { getCorrectDeclination } from '~/shared/lib/helpers/getCorrectDeclination'
 import type {
-  ICatalogWorkspace,
-  ICatalogDirectory
+  IWorkspaceExtend,
+  IDirectoryExtend
 } from '~/entities/projects'
 
 import FolderIcon from '~/widgets/projects-list/icons/folder.svg'
 import WorkspaceIcon from '~/widgets/projects-list/icons/workspace.svg'
 
 interface IProps {
-  projectData: ICatalogWorkspace | ICatalogDirectory
+  projectData: IWorkspaceExtend | IDirectoryExtend
 }
 
 const props = defineProps<IProps>()
@@ -87,13 +86,8 @@ const convertedProjectData = ref({
     if (props.projectData.type !== 'directory') {
       return ''
     }
-    const amountOfFiles = (props.projectData as ICatalogDirectory).length
-    const wordWithCorrectDeclination = getCorrectDeclination(
-      amountOfFiles,
-      ['файл', 'файла', 'файлов']
-    )
 
-    return amountOfFiles + ' ' + wordWithCorrectDeclination
+    return `Кол-во файлов: ${props.projectData.length}`
   }),
 })
 

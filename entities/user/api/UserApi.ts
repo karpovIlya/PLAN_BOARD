@@ -95,7 +95,7 @@ export default class UserApi {
   }
 
   static async checkToken () {
-    return await useFetch<IProfile>('users/check-token')
+    return await useFetch<null>('users/check-token')
   }
 
   static async refreshToken () {

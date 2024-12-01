@@ -1,5 +1,14 @@
 export default defineNuxtConfig({
   modules: ['@pinia/nuxt'],
+  hooks: {
+    'pages:extend' (pages) {
+      pages.push({
+        name: 'files',
+        path: '/files/:hash?',
+        file: '~/pages/files/[hash].vue',
+      })
+    },
+  },
   devtools: { enabled: true, },
   runtimeConfig: {
     public: {

@@ -16,23 +16,45 @@
 </template>
 
 <script setup lang="ts">
-import { ProjectApi, useProjectStore } from '~/entities/projects'
+import { ProjectApi } from '~/entities/projects'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
+import type { IBodyCatalog } from '~/entities/projects'
 import ButtonUi from '~/shared/ui/ButtonUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
-const projectStore = useProjectStore()
+const catalogData: Ref<IBodyCatalog> = inject(
+  'catalog-data',
+  ref({
+    catalog: [],
+    breadcrumbs: [],
+    currentDirectory: {
+      id: null,
+      parrentID: null,
+      filesID: [],
+      autorHash: null,
+      hash: '',
+      name: '',
+      isPrivate: false,
+    },
+  })
+)
 const responseErrorMessage = ref('')
 
 const createWorkspace = async () => {
-  const response = await ProjectApi.createWorkspace(
-    projectStore.currentDirectoryId
+  const creationResponse = await ProjectApi.createWorkspace(
+    catalogData.value.currentDirectory.id
   )
 
-  if (isSuccessResponse(response)) {
-    projectStore.updateCurrentCatalog()
+  if (isSuccessResponse(creationResponse)) {
+    const updateCatalogResponse = await ProjectApi.getCatalog(
+      catalogData.value.currentDirectory.hash
+    )
+
+    if (isSuccessResponse(updateCatalogResponse) && updateCatalogResponse.body) {
+      catalogData.value = updateCatalogResponse.body
+    }
   } else {
-    responseErrorMessage.value = response.exception.message
+    responseErrorMessage.value = creationResponse.exception.message
   }
 }
 </script>

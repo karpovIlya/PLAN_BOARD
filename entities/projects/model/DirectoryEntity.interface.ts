@@ -1,19 +1,20 @@
 import type { IUser } from '~/entities/user'
 
-export interface IDirectoryEntity {
-  id: number
-  parrentID: number
-  length: number
+export interface IDirectoryBase {
+  id: number | null
+  parrentID: number | null
   filesID: number[]
+  autorHash: string | null
   hash: string
   name: string
-  lastUpdated: string
-  autorHash: string
   isPrivate: boolean
-  autor: IUser
 }
 
-export interface ICatalogDirectory extends IDirectoryEntity {
+export interface IDirectoryExtend extends IDirectoryBase {
   type: 'directory'
+  length: number
+  createdAt: string
+  updatedAt: string
+  lastUpdated: string
   autor: IUser
 }

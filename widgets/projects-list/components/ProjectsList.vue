@@ -1,37 +1,66 @@
 <template>
-  <div class="max-w-[1114px] mx-auto px-4">
-    <h2 class="text-2xl font-medium text-helper-200">
-      Ваши проекты
-    </h2>
+  <div>
+    <div class="flex flex-col gap-2 max-w-[1114px] mx-auto px-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-medium text-helper-200">
+          Ваши проекты
+        </h2>
 
-    <div class="flex gap-4 flex-wrap justify-center mt-5">
-      <project-item
-        v-for="(project, index) in projectStore.catalog"
-        :key="index"
-        :project-data="project"
+        <button-ui
+          color="accent"
+          @click="openModal"
+        >
+          Создать
+        </button-ui>
+      </div>
+
+      <breadcrumbs-list
+        :breadcrumbs="catalogData.breadcrumbs"
+        :current-directory="catalogData.currentDirectory"
       />
+
+      <div class="flex gap-4 flex-wrap justify-center">
+        <project-item
+          v-for="project in catalogData.catalog"
+          :key="project.createdAt"
+          :project-data="project"
+        />
+      </div>
     </div>
+
+    <modal-ui v-model:is-opened="isModalOpened">
+      <create-project-form />
+    </modal-ui>
   </div>
 </template>
 
 <script setup lang="ts">
+import { CreateProjectForm } from '~/widgets/create-project-form'
+import { BreadcrumbsList } from '~/widgets/files-breadcrumbs'
+import type { IBodyCatalog } from '~/entities/projects'
 import ProjectItem from '~/widgets/projects-list/components/ProjectItem.vue'
-import { useProjectStore } from '~/entities/projects'
+import ButtonUi from '~/shared/ui/ButtonUi.vue'
+import ModalUi from '~/shared/ui/ModalUi.vue'
 
-const projectStore = useProjectStore()
+const catalogData: Ref<IBodyCatalog> = inject(
+  'catalog-data',
+  ref({
+    catalog: [],
+    breadcrumbs: [],
+    currentDirectory: {
+      id: null,
+      parrentID: null,
+      filesID: [],
+      autorHash: null,
+      hash: '',
+      name: '',
+      isPrivate: false,
+    },
+  })
+)
+const isModalOpened = ref(false)
 
-onMounted(async () => {
-  const route = useRoute()
-
-  if (
-    route.params.hash &&
-    typeof route.params.hash === 'string'
-  ) {
-    projectStore.currentDirectoryHash = route.params.hash
-  } else {
-    projectStore.currentDirectoryHash = ''
-  }
-
-  await projectStore.updateCurrentCatalog()
-})
+const openModal = () => {
+  isModalOpened.value = true
+}
 </script>
