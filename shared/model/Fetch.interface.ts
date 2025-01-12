@@ -4,6 +4,11 @@ export type TFailedExceptionType =
   'InvalidRequest' | 'Unauthorized' | 'PermissionDenied' |
   'NotFound' | 'AlreadyExist' | 'Unexpected'
 
+export interface IToast {
+  type: 'warning' | 'error' | 'cool'
+  message: string
+}
+
 interface ISuccesException {
   type: TSuccesExceptionType
   message: string
@@ -11,11 +16,6 @@ interface ISuccesException {
 
 interface IFailedException {
   type: TFailedExceptionType
-  message: string
-}
-
-interface IToast {
-  type: string
   message: string
 }
 

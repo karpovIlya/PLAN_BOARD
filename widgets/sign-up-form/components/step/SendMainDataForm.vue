@@ -78,6 +78,7 @@
           class="mt-[20px]"
           type="submit"
           color="accent"
+          :is-loading="isFormLoading"
         >
           Зарегистрироваться
         </button-ui>
@@ -113,6 +114,7 @@ import SignUpIcon from '~/widgets/sign-up-form/icons/media.svg'
 
 const emits = defineEmits(['send-main-data'])
 
+const isFormLoading = ref(false)
 const responseErrorMessage = ref('')
 const formData = ref({
   name: '',
@@ -142,6 +144,8 @@ const validations = useVuelidate(validateRules, formData)
 const userStore = useUserStore()
 
 const submitForm = async () => {
+  isFormLoading.value = true
+
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
@@ -157,6 +161,8 @@ const submitForm = async () => {
     } else {
       responseErrorMessage.value = response.exception.message
     }
+
+    isFormLoading.value = false
 
     formData.value.name = ''
     formData.value.mail = ''

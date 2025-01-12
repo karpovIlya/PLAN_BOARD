@@ -25,6 +25,7 @@
         class="mt-[20px]"
         type="submit"
         color="accent"
+        :is-loading="isFormLoading"
       >
         Создать директорию
       </button-ui>
@@ -46,6 +47,7 @@ import InputUi from '~/shared/ui/InputUi.vue'
 import ButtonUi from '~/shared/ui/ButtonUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
+const emits = defineEmits(['add-project'])
 const catalogData: Ref<IBodyCatalog> = inject(
   'catalog-data',
   ref({
@@ -62,6 +64,8 @@ const catalogData: Ref<IBodyCatalog> = inject(
     },
   })
 )
+
+const isFormLoading = ref(false)
 const responseErrorMessage = ref('')
 const formData = ref({
   directoryName: '',
@@ -82,6 +86,8 @@ const createDirectory = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
+    isFormLoading.value = true
+
     const creationResponse = await ProjectApi.createDirectory(
       formData.value.directoryName,
       catalogData.value.currentDirectory.id
@@ -94,10 +100,13 @@ const createDirectory = async () => {
 
       if (isSuccessResponse(updateCatalogResponse) && updateCatalogResponse.body) {
         catalogData.value = updateCatalogResponse.body
+        emits('add-project')
       }
     } else {
       responseErrorMessage.value = creationResponse.exception.message
     }
+
+    isFormLoading.value = false
 
     formData.value.directoryName = ''
     validations.value.$reset()

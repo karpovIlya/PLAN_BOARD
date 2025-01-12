@@ -32,7 +32,6 @@ import VerifyCodeIcon from '~/widgets/password-recovery-form/icons/сertificate.
 const emits = defineEmits(['submit-key'])
 
 const userStore = useUserStore()
-
 const responseErrorMessage = ref('')
 
 const submitForm = async (otp: number) => {

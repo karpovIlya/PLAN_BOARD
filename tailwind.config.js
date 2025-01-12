@@ -43,5 +43,20 @@ export default {
         200: '#E1E1E1',
       },
     },
+    backgroundImage: {
+      'skeleton-gradient': 'linear-gradient(90deg, #D9D9D9 25%, #F6F8FA 50%, #D9D9D9 75%)',
+    },
+    backgroundSize: {
+      '200%': '200% 100%',
+    },
+    keyframes: {
+      'skeleton-loading': {
+        '0%': { backgroundPosition: '200% 0', },
+        '100%': { backgroundPosition: '-200% 0', },
+      },
+    },
+    animation: {
+      'skeleton-loading': 'skeleton-loading 1.5s infinite',
+    },
   },
 }

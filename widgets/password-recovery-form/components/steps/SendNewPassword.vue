@@ -29,6 +29,7 @@
           class="mt-[20px]"
           type="submit"
           color="accent"
+          :is-loading="isFormLoading"
         >
           Сохранить новый пароль
         </button-ui>
@@ -54,6 +55,7 @@ import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 const router = useRouter()
 const userStore = useUserStore()
 
+const isFormLoading = ref(false)
 const responseErrorMessage = ref('')
 const formData = ref({
   newPassword: '',
@@ -75,6 +77,8 @@ const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
+    isFormLoading.value = true
+
     const response = await UserApi.setPassword({
       recoveryEmail: userStore.profile.email,
       password: formData.value.newPassword,
@@ -89,6 +93,7 @@ const submitForm = async () => {
       responseErrorMessage.value = response.exception.message
     }
 
+    isFormLoading.value = false
     formData.value.newPassword = ''
     validations.value.$reset()
   }

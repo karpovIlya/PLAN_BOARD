@@ -1,20 +1,30 @@
 <template>
   <main>
-    <projects-list />
+    <skeleton-ui :is-loading="isProjectListLoading">
+      <template #skeleton>
+        <projects-list-skeleton />
+      </template>
+
+      <template #content>
+        <projects-list />
+      </template>
+    </skeleton-ui>
   </main>
 </template>
 
 <script setup lang="ts">
-import { ProjectsList } from '~/widgets/projects-list'
+import { ProjectsList, ProjectsListSkeleton } from '~/widgets/projects-list'
 import { ProjectApi } from '~/entities/projects'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
 import type { IBodyCatalog } from '~/entities/projects'
+import SkeletonUi from '~/shared/ui/SkeletonUi.vue'
 
 definePageMeta({
   layout: 'files-layout',
   middleware: 'auth',
 })
 
+const isProjectListLoading = ref(true)
 const catalogData: Ref<IBodyCatalog> = ref({
   catalog: [],
   breadcrumbs: [],
@@ -45,5 +55,7 @@ onMounted(async () => {
   if (isSuccessResponse(catalogResponse) && catalogResponse.body) {
     catalogData.value = catalogResponse.body
   }
+
+  isProjectListLoading.value = false
 })
 </script>

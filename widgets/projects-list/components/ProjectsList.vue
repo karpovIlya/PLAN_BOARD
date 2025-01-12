@@ -8,7 +8,7 @@
 
         <button-ui
           color="accent"
-          @click="openModal"
+          @click="toggleModal"
         >
           Создать
         </button-ui>
@@ -29,7 +29,9 @@
     </div>
 
     <modal-ui v-model:is-opened="isModalOpened">
-      <create-project-form />
+      <create-project-form
+        @add-project="toggleModal"
+      />
     </modal-ui>
   </div>
 </template>
@@ -60,7 +62,7 @@ const catalogData: Ref<IBodyCatalog> = inject(
 )
 const isModalOpened = ref(false)
 
-const openModal = () => {
-  isModalOpened.value = true
+const toggleModal = () => {
+  isModalOpened.value = !isModalOpened.value
 }
 </script>

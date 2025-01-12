@@ -3,7 +3,7 @@
     <breadcrumb-item name="Главная" />
 
     <breadcrumb-item
-      v-for="breadcrumb in props.breadcrumbs"
+      v-for="breadcrumb in breadcrumbsWithoutLastItem"
       :key="breadcrumb.hash"
       :name="breadcrumb.name"
       :hash="breadcrumb.hash"
@@ -46,5 +46,8 @@ const props = withDefaults(
 
 const isСurrentDirectoryMain = computed(() => {
   return !!props.currentDirectory.id
+})
+const breadcrumbsWithoutLastItem = computed(() => {
+  return props.breadcrumbs.slice(0, -1)
 })
 </script>

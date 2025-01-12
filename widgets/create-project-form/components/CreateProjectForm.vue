@@ -14,7 +14,10 @@
         />
 
         <transition name="fade" mode="out-in">
-          <component :is="currentComponent" />
+          <component
+            :is="currentComponent"
+            @add-project="emits('add-project')"
+          />
         </transition>
       </div>
     </template>
@@ -27,6 +30,7 @@ import DirectoryForm from '~/widgets/create-project-form/components/DirectoryFor
 import WorkspaceForm from '~/widgets/create-project-form/components//WorkspaceForm.vue'
 import TabUi from '~/shared/ui/TabUi.vue'
 
+const emits = defineEmits(['add-project'])
 const activeTabId = ref(1)
 const currentComponent = computed(() => {
   switch (activeTabId.value) {

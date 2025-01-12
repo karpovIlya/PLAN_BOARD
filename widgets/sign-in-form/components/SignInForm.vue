@@ -50,6 +50,7 @@
           class="mt-[20px]"
           type="submit"
           color="accent"
+          :is-loading="isFormLoading"
         >
           Войти
         </button-ui>
@@ -91,6 +92,7 @@ import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 import AuthIcon from '~/widgets/sign-in-form/icons/streak-on.svg'
 
 const responseErrorMessage = ref('')
+const isFormLoading = ref(false)
 const formData = ref({
   mail: '',
   password: '',
@@ -118,6 +120,8 @@ const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
+    isFormLoading.value = true
+
     const response = await UserApi.auth({
       userEmail: formData.value.mail,
       userPassword: formData.value.password,
@@ -132,6 +136,7 @@ const submitForm = async () => {
       responseErrorMessage.value = response.exception.message
     }
 
+    isFormLoading.value = false
     formData.value.mail = ''
     formData.value.password = ''
 

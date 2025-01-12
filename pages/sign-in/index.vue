@@ -11,4 +11,8 @@ import { FormTemplate } from '~/widgets/form-template'
 import { SignInForm } from '~/widgets/sign-in-form'
 
 import SignInImage from '~/assets/images/authentication/signin.png'
+
+definePageMeta({
+  middleware: 'not-auth',
+})
 </script>

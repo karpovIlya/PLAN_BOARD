@@ -1,9 +1,11 @@
 import { useUserStore } from '~/entities/user'
+import { useToast } from '~/shared/lib/hooks/useToast'
 import { isSuccessResponse } from '~/shared/lib/helpers/isSuccessResponse'
 import type {
   IFetchOptions,
   ISuccesResponse,
-  IFailedResponse
+  IFailedResponse,
+  IToast
 } from '~/shared/model/Fetch.interface'
 
 const UPDATE_TOKEN_ENDPOINT = 'users/update-token'
@@ -39,12 +41,21 @@ export async function useFetch<B> (
       throw data
     }
 
+    if ('toast' in data) {
+      useToast(data.toast as IToast)
+    }
+
     return data as ISuccesResponse<B>
   } catch (error: any) {
     const nuxtError = useError()
 
     if ('status' in error) {
       const failedResponse = error as IFailedResponse
+
+      if ('toast' in failedResponse) {
+        useToast(failedResponse.toast as IToast)
+        return failedResponse
+      }
 
       if (
         failedResponse.exception.type === 'Unauthorized' &&
@@ -60,6 +71,11 @@ export async function useFetch<B> (
             updatedAccessToken
           )
         }
+      } else if (
+        failedResponse.exception.type === 'Unauthorized' &&
+        endpoint === UPDATE_TOKEN_ENDPOINT
+      ) {
+        userStore.clearState()
       }
 
       switch (failedResponse.status) {

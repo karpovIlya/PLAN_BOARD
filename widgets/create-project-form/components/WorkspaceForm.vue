@@ -22,6 +22,7 @@ import type { IBodyCatalog } from '~/entities/projects'
 import ButtonUi from '~/shared/ui/ButtonUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
+const emits = defineEmits(['add-project'])
 const catalogData: Ref<IBodyCatalog> = inject(
   'catalog-data',
   ref({
@@ -38,9 +39,13 @@ const catalogData: Ref<IBodyCatalog> = inject(
     },
   })
 )
+
+const isFormLoading = ref(false)
 const responseErrorMessage = ref('')
 
 const createWorkspace = async () => {
+  isFormLoading.value = true
+
   const creationResponse = await ProjectApi.createWorkspace(
     catalogData.value.currentDirectory.id
   )
@@ -52,9 +57,12 @@ const createWorkspace = async () => {
 
     if (isSuccessResponse(updateCatalogResponse) && updateCatalogResponse.body) {
       catalogData.value = updateCatalogResponse.body
+      emits('add-project')
     }
   } else {
     responseErrorMessage.value = creationResponse.exception.message
   }
+
+  isFormLoading.value = false
 }
 </script>

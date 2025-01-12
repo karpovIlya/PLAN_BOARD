@@ -29,6 +29,7 @@
           class="mt-[20px]"
           type="submit"
           color="accent"
+          :is-loading="isFormLoading"
         >
           Отправить код
         </button-ui>
@@ -52,8 +53,9 @@ import ButtonUi from '~/shared/ui/ButtonUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
 const emits = defineEmits(['submit-mail'])
-const responseErrorMessage = ref('')
 
+const isFormLoading = ref(false)
+const responseErrorMessage = ref('')
 const formData = ref({
   mail: '',
 })
@@ -74,6 +76,7 @@ const submitForm = async () => {
   const isFormValid = await validations.value.$validate()
 
   if (isFormValid) {
+    isFormLoading.value = true
     const response = await UserApi.forgetPassword(formData.value.mail)
 
     if (isSuccessResponse(response)) {
@@ -83,7 +86,9 @@ const submitForm = async () => {
       responseErrorMessage.value = response.exception.message
     }
 
+    isFormLoading.value = false
     formData.value.mail = ''
+
     validations.value.$reset()
   }
 }

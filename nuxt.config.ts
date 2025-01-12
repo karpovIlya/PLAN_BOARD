@@ -1,5 +1,8 @@
 export default defineNuxtConfig({
   modules: ['@pinia/nuxt'],
+  plugins: [
+    { src: '~/plugins/vue3-toastify.ts', }
+  ],
   hooks: {
     'pages:extend' (pages) {
       pages.push({
@@ -13,6 +16,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       API_URL: process.env.API_URL || 'http://127.0.0.1:9456/',
+      SOCKET_URL: process.env.SOCKET_URL || 'ws://127.0.0.1:9458/',
     },
   },
   postcss: {

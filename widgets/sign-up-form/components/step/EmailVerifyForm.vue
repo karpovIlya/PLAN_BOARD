@@ -25,9 +25,9 @@ import OtpPadUi from '~/shared/ui/OtpPadUi.vue'
 import ErrorLabelUi from '~/shared/ui/ErrorLabelUi.vue'
 
 const emits = defineEmits(['email-verify'])
+
 const userStore = useUserStore()
 const router = useRouter()
-
 const responseErrorMessage = ref('')
 
 const submitForm = async (verificationCode: number) => {
